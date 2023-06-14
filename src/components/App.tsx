@@ -249,10 +249,11 @@ class App extends React.Component<unknown, AppState> {
 
   decodeTabContent(content: string, tabIndex: number): void {
     const { openedTabs } = this.state
+
     // Use a worker to avoid UI freezes
-    const decodeWorker = new Worker('../scripts/encode-decode.worker.ts', {
-      type: 'module'
-    })
+    const decodeWorker = new Worker(
+      new URL('../scripts/encode-decode.worker.ts', import.meta.url)
+    )
 
     decodeWorker.postMessage({
       message: content,

@@ -33,9 +33,9 @@ class WasmRenderer extends React.Component<
     this.loadWasmLibrary = this.loadWasmLibrary.bind(this)
     this.convertToUint8Array = this.convertToUint8Array.bind(this)
 
-    this.rawDecodeWorker = new Worker('../../scripts/encode-decode.worker.ts', {
-      type: 'module'
-    })
+    this.rawDecodeWorker = new Worker(
+      new URL('../../scripts/encode-decode.worker.ts', import.meta.url)
+    )
   }
 
   componentDidMount(): void {
@@ -97,8 +97,7 @@ class WasmRenderer extends React.Component<
 
     return new Promise((resolve, reject) => {
       this.rawDecodeWorker.onmessage = event => resolve(event.data)
-      this.rawDecodeWorker.onerror = () =>
-        reject(new Error('Error decoding content'))
+      this.rawDecodeWorker.onerror = err => reject(err)
     })
   }
 

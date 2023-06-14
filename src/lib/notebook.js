@@ -377,6 +377,6 @@
   };
 
   // Exports
-  // HOTFIX: only use the "exports" syntax
+  // HOTFIX: only use the default export syntax
   module.exports = nb;
 }.call(this));

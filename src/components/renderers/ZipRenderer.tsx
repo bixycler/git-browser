@@ -38,9 +38,9 @@ class ZipRenderer extends React.Component<ZipRendererProps, ZipRendererState> {
     this.parseZip = this.parseZip.bind(this)
     this.convertToUint8Array = this.convertToUint8Array.bind(this)
 
-    this.rawDecodeWorker = new Worker('../../scripts/encode-decode.worker.ts', {
-      type: 'module'
-    })
+    this.rawDecodeWorker = new Worker(
+      new URL('../../scripts/encode-decode.worker.ts', import.meta.url)
+    )
   }
 
   componentDidMount(): void {

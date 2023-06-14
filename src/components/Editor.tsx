@@ -111,9 +111,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
       isEncoding: false
     }
 
-    this.encodeWorker = new Worker('../scripts/encode-decode.worker.ts', {
-      type: 'module'
-    })
+    this.encodeWorker = new Worker(
+      new URL('../scripts/encode-decode.worker.ts', import.meta.url)
+    )
 
     this.editorRef = React.createRef<HTMLDivElement>()
     this.getEditorTheme = this.getEditorTheme.bind(this)

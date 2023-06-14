@@ -37,9 +37,9 @@ class PDFRenderer extends React.Component<PDFRendererProps, PDFRendererState> {
     this.decodeContent = this.decodeContent.bind(this)
     this.setErrorState = this.setErrorState.bind(this)
 
-    this.rawDecodeWorker = new Worker('../../scripts/encode-decode.worker.ts', {
-      type: 'module'
-    })
+    this.rawDecodeWorker = new Worker(
+      new URL('../../scripts/encode-decode.worker.ts', import.meta.url)
+    )
   }
 
   componentDidMount(): void {

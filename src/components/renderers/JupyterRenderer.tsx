@@ -110,13 +110,18 @@ class JupyterRenderer extends React.Component<
   parseNotebook(content: string): string {
     const { nb, Anser, MarkdownIt } = this
 
-    nb.ansi = text => Anser.ansiToText(text)
+    nb.ansi = (text: string): string => Anser.ansiToText(text)
 
-    nb.highlighter = (text, pre, code, lang) => {
+    nb.highlighter = (
+      text: string,
+      pre: HTMLPreElement,
+      code: HTMLElement,
+      lang: string
+    ): string => {
       return this.highlighter(text, lang || 'python')
     }
 
-    nb.markdown = str => {
+    nb.markdown = (text: string): string => {
       const md = new MarkdownIt({
         html: true,
         typographer: true,
@@ -125,7 +130,7 @@ class JupyterRenderer extends React.Component<
         highlight: this.highlighter
       })
 
-      return md.render(str)
+      return md.render(text)
     }
 
     const ipynb = JSON.parse(content)
