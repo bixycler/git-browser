@@ -2,7 +2,6 @@ const path = require('path')
 const { HotModuleReplacementPlugin, EnvironmentPlugin } = require('webpack')
 const HTMLWebpackPlugin = require('html-webpack-plugin')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CopyPlugin = require('copy-webpack-plugin')
@@ -47,7 +46,6 @@ module.exports = env => {
         '!suggest'
       ]
     }),
-    new CleanWebpackPlugin(),
     new HTMLWebpackPlugin({
       template: path.resolve(__dirname, 'public', 'index.html')
     }),
@@ -58,7 +56,7 @@ module.exports = env => {
       }))
     ),
     new EnvironmentPlugin({
-      DEBUG: JSON.parse(env.debug)
+      DEBUG: (env.debug===undefined)? false: JSON.parse(env.debug)
     })
   ]
 
@@ -69,44 +67,56 @@ module.exports = env => {
   return {
     plugins,
     mode: 'development',
-    entry: path.resolve(__dirname, 'src', 'index.tsx'),
+    entry: './src/index.tsx',
     output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: 'bundle.js',
-      publicPath: '/'
+      //path: path.resolve(__dirname, 'dist'), //default
+      //filename: '[name].js', //default
+      publicPath: '/',
+      clean: true, // in place of `clean-webpack-plugin`
     },
     devServer: {
-      contentBase: path.resolve(__dirname, 'public'),
-      open: false,
-      clientLogLevel: 'silent',
+      //static: ['public'], //default
+      open: false, // don't open new browser every time
+      client: {
+        logging: 'log',//'log','info','warn','error','none','verbose',
+        progress: true,
+      },
       port: 9000,
-      host: '0.0.0.0',
-      useLocalIp: true,
-      writeToDisk: true,
+      host: '0.0.0.0',//'local-ip',//'0.0.0.0',
+      devMiddleware: {
+        writeToDisk: true,
+      },
       hot: true,
+      allowedHosts: 'all', // [v5] allowedHosts:'all' == [v4] disableHostCheck:true
       // Allows any url to be visited without throwing a 404 in dev mode
       historyApiFallback: {
         index: '/',
-        disableDotRule: true
-      }
+        disableDotRule: true,
+      },
     },
+    //devtool: 'source-map', // generate source maps for DevTools; See `source-map-loader` for loading existing source maps.
     module: {
       rules: [
         {
           test: /\.(ts|js)x?$/,
           include: path.resolve(__dirname, 'src'),
           exclude: /node_modules/,
-          use: 'babel-loader'
+          use: ['babel-loader'],
+        },
+        {// load existing source maps for DevTools
+          test: /\.(ts|js)x?$/,
+          exclude: /node_modules\/@firebase\/auth/,
+          use: ['source-map-loader',],
         },
         {
           test: /\.(ttf|png|jpg|svg|ico)$/,
-          type: 'asset/resource'
+          type: 'asset/resource',
         },
         {
           test: /\.(css|scss)$/,
-          use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
-        }
-      ]
+          use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader',],
+        },
+      ],
     },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
